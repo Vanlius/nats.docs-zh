@@ -1,44 +1,44 @@
-# What is NATS
+# NATS是什么
 
-Software applications and services need to exchange data. NATS is an infrastructure that allows such data exchange, segmented in the form of messages. We call this a "**message oriented middleware**".
+软件应用程序和服务需要交换数据。 NATS 是一种允许以消息形式进行数据交换的基础设施。我们称之为“面向消息的中间件”。  
 
-With NATS, application developers can:  
+使用 NATS，应用程序开发人员可以： 
 
-- Effortlessly build distributed and scalable client-server applications.
+- 轻松构建分布式和可伸缩的客户端-服务器应用程序。
 
-- Store and distribute data in realtime in a general manner. This can flexibly be achieved across various environments, languages, cloud providers and on-premises systems.
+- 以一般方式实时存储和分发数据。可以在各种环境、语言、云提供商和本地系统中灵活地实现。
 
-### NATS Client Applications
+### NATS客户端程序
 
-Developers use one of the NATS client libraries in their application code to allow them to publish, subscribe, request and reply between instances of the application or between completely separate applications. Those applications are generally referred to as 'client applications' or sometimes just as 'clients' throughout this manual (since from the point of view of the NATS server, they are clients).
+开发人员在其应用程序代码中使用 NATS 客户端库，以允许他们在应用程序实例之间或完全独立的应用程序之间发布、订阅、请求和回复。在本手册中，这些应用程序通常称为“客户端应用程序”或有时仅称为“客户端”（因为从 NATS 服务器的角度来看，它们就是客户端）。 
 
-### NATS Service Infrastructure
+### NATS服务基础架构  
+ 
+NATS 服务由一个或多个 NATS 服务器进程提供，这些进程被配置为相互互连并提供 *NATS 服务基础*。 NATS 服务基础架构可以从运行在终端设备上的单个 NATS 服务器进程（`nats-server` 进程的大小小于 20 MB！）扩展成一个涵盖全球所有地区主要云提供商的公共的全球超级集群，例如 Synadia 的 NGS。  
 
-The NATS services are provided by one or more NATS server processes that are configured to interconnect with each other and provide a *NATS service infrastructure*. The NATS service infrastructure can scale from a single NATS server process running on an end device (the `nats-server` process is less than 20 MB in size!) all the way to a public global super-cluster of many clusters spanning all major cloud providers and all regions of the world such as Synadia's NGS.
+### 将NATS客户端应用程序连接到NATS服务器
 
-### Connecting NATS Client applications to the NATS servers
+将NATS客户端应用程序与NATS服务连接，然后向主题订阅或发布消息，只需要配置：
 
-To connect a NATS client application with a NATS service, and then subscribe or publish messages to subjects, it only needs to be configured with:
+1. **URL:** ['NATS URL'](/using-nats/developing-with-nats/connecting/README.md#nats-url)这是一个字符串（以 URL 格式），指定可以访问 NATS 服务器的 IP 地址和端口，以及要建立的连接类型（普通 TCP、TLS 或 Websocket）。
 
-1. **URL:** A ['NATS URL'](/using-nats/developing-with-nats/connecting/README.md#nats-url). This is a string (in a URL format) that specifies the IP address and port where the NATS server(s) can be reached, and what kind of connection to establish (plain TCP, TLS, or Websocket).
+2.  **Authentication** (如需要): 应用程序的身份验证详细信息，用于向 NATS 服务器标识自己。 NATS 支持多种身份验证方案（用户名/密码、去中心化的JWT、token、TLS 证书和具有应答的 Nkey）。
 
-2. **Authentication** (if needed): [Authentication](/using-nats/developing-with-nats/connecting/README.md#authentication-details) details for the application to identify itself with the NATS server(s). NATS supports multiple authentication schemes (username/password, decentralized JWT, token, TLS certificates and Nkey with challenge).
+## 简单的消息传递设计
 
-## Simple messaging design
+NATS使得应用程序通过发送和接收消息进行通信变得很容易。这些消息由主题字符串寻址和标识，不依赖于网络位置。
 
-NATS makes it easy for applications to communicate by sending and receiving messages. These messages are addressed and identified by subject strings, and do not depend on network location.
-
-Data is encoded and framed as a message and sent by a publisher. The message is received, decoded, and processed by one or more subscribers.
+数据被编码和框架化为消息并由发布者发送。消息由一个或多个订阅者接收、解码和处理。
 
 ![](../../.gitbook/assets/intro.svg)
 
-With this simple design, NATS lets programs share common message-handling code, isolate resources and interdependencies, and scale by easily handling an increase in message volume, whether those are service requests or stream data.
+通过这种简单的设计，NATS允许程序共享公共的消息处理代码、隔离资源和相互依赖，并通过轻松地处理消息量的增加来扩展，无论这些消息量是服务请求还是流数据。
 
-### NATS Quality of service (QoS)
+### NATS服务质量(QoS)
 
-NATS offers multiple qualities of service, depending on whether the application uses just the _Core NATS_ functionality or also leverages the added functionalities enabled by _NATS JetStream_ (JetStream is built into `nats-server` but may not be enabled on all service infrastructures).  
+NATS 提供多种服务质量，具体取决于应用程序是仅使用NATS核心功能还是使用NATS JetStream 的附加功能（JetStream 内置在 `nats-server` 中，但可能不会在所有服务基础设施上启用）。
 
-- **At most once QoS:** _Core NATS_ offers an **at most once** quality of service. If a subscriber is not listening on the subject \(no subject match\), or is not active when the message is sent, the message is not received. This is the same level of guarantee that TCP/IP provides. _Core NATS_ is a fire-and-forget messaging system. It will only hold messages in memory and will never write messages directly to disk.
+- **At most once QoS:** _Core NATS_ 提供**最多一次**的服务质量。如果订阅者没有监听主题（没有主题匹配），或者在发送消息时未处于活动状态，则不会收到消息。这与 TCP/IP 提供的保证级别相同。 Core NATS 是一个即发即弃的消息传递系统。它只会将消息保存在内存中，并且永远不会将消息直接写入磁盘。
 
-- **At-least / exactly once QoS:** If you need higher qualities of service (**at least once** and **exactly once**), or functionalities such as persistent streaming, de-coupled flow control, and Key/Value Store, you can use [NATS JetStream](/nats-concepts/jetstream/readme.md), which is built in to the NATS server (but needs to be enabled). Of course, you can also always build additional reliability into your client applications yourself with proven and scalable reference designs such as acks and sequence numbers.
+- **At-least / exactly once QoS:** 如果您需要更高质量的服务（**至少一次**或**恰好一次**），或持久流、解耦流控制和键/值存储等功能，您可以使用[NATS JetStream](/nats-concepts/jetstream/readme.md)，它内置在NATS服务器中（但需要启用）。当然，您还可以使用经过验证的、可伸缩的参考设计(如acks和序列号)，自己为客户端应用程序构建额外的可靠性。
 

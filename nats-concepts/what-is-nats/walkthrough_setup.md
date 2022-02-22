@@ -1,60 +1,59 @@
-# Walkthrough prerequisites
+# 演示参考
 
-We have provided Walkthroughs for you to try NATS (and JetStream) on your own. In order to follow along with the walkthroughs, you could choose one of these options:  
+我们已经为您提供了参考演示，您可以自己尝试 NATS（和 JetStream）。为了跟进演示，您可以选择以下选项之一：
 
-- The `nats` CLI tool must be installed, and a local NATS server must be installed (or you can use a remote server you have access to).   
-- You can use Synadia's NGS.   
-- You could even use the demo server from where you installed NATS. This is accessible via `nats://demo.nats.io` (this is a NATS connection URL; not a browser URL. You pass it to a NATS client application).  
+- 已经安装`nats` CLI工具，并安装本地nats服务器(也可以使用可访问的远程服务器)。  
+- 您可用使用Synadia's NGS。 
+- 您甚至可以使用安装 NATS 的演示服务器。可以通过`nats://demo.nats.io`访问（这是一个 NATS 连接 URL；不是浏览器 URL。您将它传递给 NATS 客户端应用程序）。
   
-## Installing the [`nats`](/using-nats/nats-tools/nats_cli/readme.md) CLI Tool
+## 安装[`nats`](/using-nats/nats-tools/nats_cli/readme.md) CLI 工具
 
-For MacOS:
+MacOS:
 
 ```shell
 brew tap nats-io/nats-tools
 brew install nats-io/nats-tools/nats
 ```
 
-For Arch Linux:
+Arch Linux:
 
 ```shell
 yay natscli
 ```
     
-For other versions of Linux and for Windows:  
-The `.deb` or `.rpm` files and Windows binaries (even for ARM) are available here [GitHub Releases](https://github.com/nats-io/natscli/releases).
+对于其他版本的 Linux 和 Windows： .deb 或 .rpm 文件和 Windows 二进制文件（甚至适用于 ARM）在 [GitHub Releases](https://github.com/nats-io/natscli/releases)中可用。
 
-## Installing the NATS server locally (if needed)
+## 本地安装NATS服务器 (如需要)
 
-If you are going to run a server locally you need to first install it and start it. Alternatively if you already know how to use NATS on a remote server, you only need to pass the server URL to `nats` using the `-s` option or preferably create a context using `nats context add`, to specify the server URL(s) and credentials file containing your user JWT.
+如果要在本地运行服务器，则需要先安装并启动它。或者，如果您已经知道如何在远程服务器上使用 NATS，则只需使用`-s`参数将服务器 URL 传递给`nats`，或者最好使用 `nats context add` 创建上下文，以指定服务器URL(s)和包含用户JWT的凭据文件。
 
-### Installing the NATS server via a Package Manager
+### 通过包管理器安装NATS服务器
 
-On Mac OS:
+Mac OS:
 
 ```shell
 brew install nats-server
 ```
 
-On Windows:
+Windows:
 
 ```shell
 choco install nats-server
 ```
 
-On Arch Linux:
+Arch Linux:
 
 ```shell
 yay nats-server
 ```
   
-For other versions of Linux or other architectures, you can install a [release build](https://github.com/nats-io/nats-server/releases) as shown below.
+对于其他版本的 Linux 或其他架构，您可以安装[发布版本](https://github.com/nats-io/nats-server/releases)，如下所示
   
-### Downloading a Release Build
+### 下载发布版本
 
-You can find the latest release of `nats-server` [here](https://github.com/nats-io/nats-server/releases).
+您可以在此处找到最新版本的 `nats-server` [here](https://github.com/nats-io/nats-server/releases)。
 
-You could manually download the zip file matching your systems architecture, and unzip it. You could also use `curl` to download a specific version. The example below shows for example, how to download version 2.6.2 of the `nats-server` for Linux AMD64:  
+您可以手动下载与您的系统架构匹配的 zip 文件，然后将其解压缩。您还可以使用 curl 下载特定版本。例如，下面的示例显示了如何下载 Linux AMD64 的 `nats-server` 2.6.2 版本：
 
 ```shell
 curl -L https://github.com/nats-io/nats-server/releases/download/v2.6.5/nats-server-v2.6.5-linux-amd64.zip -o nats-server.zip
@@ -63,7 +62,7 @@ curl -L https://github.com/nats-io/nats-server/releases/download/v2.6.5/nats-ser
 ```shell
 unzip nats-server.zip -d nats-server
 ```
-which should output something like
+应该输出如下类似
 ```text
 Archive:  nats-server.zip
    creating: nats-server-v2.6.2-linux-amd64/
@@ -71,22 +70,22 @@ Archive:  nats-server.zip
   inflating: nats-server-v2.6.2-linux-amd64/LICENSE
   inflating: nats-server-v2.6.2-linux-amd64/nats-server
 ```
-and finally, copy it to the `bin` folder (this allows you to run the executable from anywhere in the system):
+最后，将其复制到 bin 文件夹（这允许您从系统中的任何位置运行可执行文件）：
 ```shell
 sudo cp nats-server/nats-server-v2.6.2-linux-amd64/nats-server /usr/bin
 ```
 
-### Start the NATS server (if needed)
+### 启动NATS服务器 (如需要)
 
-To start a simple demonstration server locally, simply run:
+要在本地启动一个简单的演示服务器，只需运行：
 
 ```bash
 nats-server
 ```
 
-(or `nats-server -m 8222` if you want to enable the HTTP monitoring functionality)
+(或 `nats-server -m 8222` 如果要启用http监控功能)
 
-When the server starts successfully, you will see the following messages:
+服务器启动成功后，您将看到以下消息：
 
 ```text
 [14524] 2021/10/25 22:53:53.525530 [INF] Starting nats-server
@@ -99,4 +98,4 @@ When the server starts successfully, you will see the following messages:
 [14524] 2021/10/25 22:53:53.526684 [INF] Server is ready
 ```
 
-The NATS server listens for client connections on TCP Port 4222.
+NATS 服务器在 TCP 端口 4222 上侦听客户端连接。
