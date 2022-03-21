@@ -1,33 +1,33 @@
-# NATS Service Infrastructure
+# NATS服务架构
 
-NATS is a client/server system in the fact that you have 'NATS client applications' (applications using one of the NATS client libraries) that connect to 'NATS servers' that provide the NATS service. The NATS servers work together to provide a NATS service infrastructure to their client applications.
+NATS是一种客户端/服务器架构系统，因为你使用nats客户端应用程序（调用某种NATS客户端库的应用程序）连接到提供NATS服务的NATS服务器集群。NATS服务器集群，为其客户端应用程序提供NATS服务。   
 
-NATS is extremely flexible and scalable and allows the service infrastructure to be as small as a single process running locally on your local machine and as large as an 'Internet of NATS' of Leaf Nodes, and Leaf Node clusters all interconnected in a secure way over a global shared NATS super-cluster.  
+NATS是非常灵活和可扩展的，允许服务基础设施小到在本地机器上运行的单个进程，大到作为“NATS互联网”的叶节点，叶节点集群都以安全的方式互连一个全球共享的NATS超级集群。  
 
-Regardless of the size and complexity of the NATS service infrastructure being used, the only configuration needed by the client applications being the location (NATS URLs) of one or more NATS servers and depending on the required security, their credentials.
+无论使用的NATS服务基础架构的大小和复杂程度如何，客户端应用程序所需的唯一配置是一个或多个NATS服务器的位置（NATS URL），以及它们的凭据(取决于所需的安全性)。  
 
-Note that if your application is written in Golang then you even have the option of embedding the NATS server functionality into the application itself (however you need to then configure your application instances with nats-server configuration information).
+注意，如果你的应用程序是用Golang编写的，那么你甚至可以选择将NATS服务器功能嵌入到应用程序本身(然而，你需要使用NATS-server的配置信息来配置你的应用程序实例)。  
 
-You do not actually need to run your NATS service infrastructure, instead you can instead make use of a public NATS infrastructure offered by a NATS Service Provider such as Synadia's [NGS](https://synadia.com/ngs/), think of NGS as being an 'Internet of NATS' (literally an "InterNATS") and of Synadia as being an "InterNATS Service Provider".
+您实际上不需要运行NATS服务，而是可以直接使用由NATS服务提供商（例如 Synadia 的 NGS）提供的公共NATS基础服务，将NGS视为“NATS互联网”（字面意思是“InterNATS” ) 和 Synadia 作为“InterNATS 服务提供商”。  
 
-## The Evolution of your NATS service infrastructure
+## NATS服务架构的演变
 
-You will typically start by running a single instance of nats-server on your local development machine, and have your applications connect to it while you do your application development and local testing.
+首先，你通常会在本地开发机器上运行一个nats-server实例，你的应用程序在进行应用程序开发和本地测试时连接到它。  
 
-Next you will probably want to start testing and running those applications and servers in a VPC, or a region or in some on-prem location, so you will deploy either single NATS server or clusters of NATS servers in your VPCs/regions/on-prem/etc... locations and in each location have the applications connect their local nats-server or nats-server cluster. You can then connect those local nats-servers or local nats-server clusters together by making them leaf nodes connecting to a 'backbone' cluster or super-cluster, or by connecting them directly together via gateway connections.
+接下来，您可能希望在虚拟私有云、区域或某个本地位置开始测试和运行这些应用程序和服务器，因此您将在你的 虚拟私有云/区域/某个位置/etc…中部署单个NATS服务器或NATS服务器集群，并且在每个位置让应用程序连接其本地 nats-server 或 nats-server 集群。然后，您可以将这些本地 nats-servers 或本地 nats-server 集群连接在一起，方法是让它们连接到“主干”集群或超级集群的叶节点，或者通过网关连接将它们直接连接在一起。  
 
-If you have very many client applications (i.e. applications deployed on end-user devices all over the Internet, or for example many IoT devices) or many servers in many locations you will then scale your NATS service infrastructure by deploying clusters of NATS servers in multiple locations and multiple cloud providers and VPCs, and connecting those clusters together into a global super-cluster and then devise a scheme to intelligently direct your client applications to the right 'closest' NATS server cluster.
+如果你有很多客户机应用程序(即应用程序部署到终端用户设备在互联网上,或例如很多物联网设备)或在很多地方的多个服务器，然后，您将通过在多个地方、多个云提供商和虚拟私有云中部署NATS服务器集群来扩展你的NATS服务基础设施,并将这些集群连接到一起，形成一个全球超级集群，然后设计一个方案，智能地将你的客户端应用程序接入到“正确且最近”的NATS服务器集群。  
+
+## 运行你自己的NATS服务基础架构  
+
+您可以部署和运行您自己的nats-server实例的NATS服务基础设施，该实例由服务器、服务器集群、超级集群和叶节点NATS服务器组成。  
  
-## Running your own NATS service infrastructure
+### 虚拟化和容器化注意事项  
 
-You can deploy and run your own NATS service infrastructure of nats-server instances, composed of servers, clusters of servers, super-cluster and leaf node NATS servers.
+虽然您当然可以使用 Kubernetes、Nomad 或 Docker Swarm 等容器编排系统来部署您的 NATS 服务器基础架构，而且大多数人都这样做，但我们的建议是 NATS 服务基础架构就是这样：**基础架构**。这意味着它最好在与容器基础架构**相同的级别**上运行，而不是在其中运行。
 
-### Virtualization and containerization considerations
+这是因为虚拟化、容器化和重定向的每一层都可能成为问题和延迟的来源，容器编排系统提供的服务(例如，检测进程是否仍在运行并相应地重定向网络流量以提供HA的形式)已经由NATS本身实现得更好、更快。  
 
-While you can certainly use container orchestration systems such as Kubernetes, Nomad or Docker Swarm to deploy your infrastructure of NATS servers and very many people do so, our recommendation is for the NATS service infrastructure to be just that: **Infrastructure**. Meaning that it is _best_ if it runs **at the same level** as your container infrastructure, not _inside it_.
+问问你自己这个问题:如果你想要最好的性能、可靠性和最快的容错，你是使用Kubernetes/Nomad/Swarm在容器中运行你的数据库服务器，还是直接在vm中运行，或者尽可能接近裸机?  
 
-This is because each layer of virtualization, containerization and redirection can be a source of problems and delays, and container orchestration systems are there to provide a service (e.g. detecting that processes are still running or not and redirecting network traffic accordingly in order to provide a form of HA) that is already implemented much better and faster by NATS itself.
-
-Ask yourself this question: if you wanted the best possible performance, reliability, and fastest fault-tolerance would you run your database servers in containers and using Kubernetes/Nomad/Swarm, or would you instead run them directly in VMs or as close to bare metal as you can?
-
-NATS servers are effectively 'message routers'. They constantly get data over the network and send data over the network. If they are JetStream enabled they also constantly read and write to files. They are highly optimized and have many built-in heart-beats, failover and flow control mechanisms. The less the number of layers between the NATS server process, the network and disk, the faster it will work and the less the number of things that can break or places where there can be a configuration error. And you are not relying on some proxy, port mapping or DNS trickery in order for your client applications to be able to connect to the NATS server instance(s) as your container orchestration system moves them around while if running in a VM they could simply be restarted and clients would keep using the same well-known IP address or CNAME.
+NATS服务器实际上是“消息路由器”。它们不断地通过网络获取数据并通过网络发送数据。如果启用了JetStream，它们还会不断地读写文件。它们经过高度优化，并具有许多内置的心跳、故障转移和流量控制机制。 NATS 服务器进程、网络和磁盘之间的层数越少，它的工作速度就越快，可能发生故障的东西或出现配置错误的地方就越少。并且您不依赖某些代理、端口映射或 DNS 技巧来让您的客户端应用程序连接到 NATS 服务器实例，因为你的容器编排系统会移动它们，而如果在 VM 中运行它们可以简单地重新启动，客户端将继续使用相同的已知 IP 地址或 CNAME。

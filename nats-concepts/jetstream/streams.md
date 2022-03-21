@@ -1,6 +1,6 @@
 # Streams
 
-流是“消息存储”，每个流定义了消息如何存储以及保留的限制(持续时间、大小、兴趣（流存在消费者及长期维持）)。流使用常规的NATS主题，在这些主题上发布的任何消息都能在jetstream流定义的存储系统（file、memory）中获取。对于不需要做消息确认的消息投递，您可以对subject做普通的发布，不过建议使用JetStream发布消息，因为JetStream服务器将回复一个确认信息（ack），确认已成功存储。
+流是“消息存储”，每个流定义了消息如何存储以及保留的限制(持续时间、大小、兴趣（流存在消费者及长期维持）)。流使用常规的NATS主题，在这些主题上发布的任何消息都能在jetstream流定义的存储系统（file、memory）中获取。对于不需要做消息确认的消息投递，你可以对subject做普通的发布，不过建议使用JetStream发布消息，因为JetStream服务器将回复一个确认信息（ack），确认已成功存储。
 
 ![Orders](../../.gitbook/assets/streams-and-consumers-75p.png)
 

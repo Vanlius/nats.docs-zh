@@ -38,7 +38,7 @@ JetStream Account Information:
 
 ## Creating a KV bucket
 
-就像你必须先创建流才能使用它们一样，您首先需要使用`nats kv add <KV Bucket Name>` 创建一个`KV bucket`：  
+就像你必须先创建流才能使用它们一样，你首先需要使用`nats kv add <KV Bucket Name>` 创建一个`KV bucket`：  
 ```shell
 nats kv add my_kv
 ```

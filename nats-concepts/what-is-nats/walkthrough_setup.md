@@ -1,10 +1,10 @@
 # 演示参考
 
-我们已经为您提供了参考演示，您可以自己尝试 NATS（和 JetStream）。为了跟进演示，您可以选择以下选项之一：
+我们已经为你提供了参考演示，你可以自己尝试 NATS（和 JetStream）。为了跟进演示，你可以选择以下选项之一：
 
 - 已经安装`nats` CLI工具，并安装本地nats服务器(也可以使用可访问的远程服务器)。  
-- 您可用使用Synadia's NGS。 
-- 您甚至可以使用安装 NATS 的演示服务器。可以通过`nats://demo.nats.io`访问（这是一个 NATS 连接 URL；不是浏览器 URL。您将它传递给 NATS 客户端应用程序）。
+- 你可用使用Synadia's NGS。 
+- 你甚至可以使用安装 NATS 的演示服务器。可以通过`nats://demo.nats.io`访问（这是一个 NATS 连接 URL；不是浏览器 URL。你将它传递给 NATS 客户端应用程序）。
   
 ## 安装[`nats`](/using-nats/nats-tools/nats_cli/readme.md) CLI 工具
 
@@ -25,7 +25,7 @@ yay natscli
 
 ## 本地安装NATS服务器 (如需要)
 
-如果要在本地运行服务器，则需要先安装并启动它。或者，如果您已经知道如何在远程服务器上使用 NATS，则只需使用`-s`参数将服务器 URL 传递给`nats`，或者最好使用 `nats context add` 创建上下文，以指定服务器URL(s)和包含用户JWT的凭据文件。
+如果要在本地运行服务器，则需要先安装并启动它。或者，如果你已经知道如何在远程服务器上使用 NATS，则只需使用`-s`参数将服务器 URL 传递给`nats`，或者最好使用 `nats context add` 创建上下文，以指定服务器URL(s)和包含用户JWT的凭据文件。
 
 ### 通过包管理器安装NATS服务器
 
@@ -47,13 +47,13 @@ Arch Linux:
 yay nats-server
 ```
   
-对于其他版本的 Linux 或其他架构，您可以安装[发布版本](https://github.com/nats-io/nats-server/releases)，如下所示
+对于其他版本的 Linux 或其他架构，你可以安装[发布版本](https://github.com/nats-io/nats-server/releases)，如下所示
   
 ### 下载发布版本
 
-您可以在此处找到最新版本的 `nats-server` [here](https://github.com/nats-io/nats-server/releases)。
+你可以在此处找到最新版本的 `nats-server` [here](https://github.com/nats-io/nats-server/releases)。
 
-您可以手动下载与您的系统架构匹配的 zip 文件，然后将其解压缩。您还可以使用 curl 下载特定版本。例如，下面的示例显示了如何下载 Linux AMD64 的 `nats-server` 2.6.2 版本：
+你可以手动下载与你的系统架构匹配的 zip 文件，然后将其解压缩。你还可以使用 curl 下载特定版本。例如，下面的示例显示了如何下载 Linux AMD64 的 `nats-server` 2.6.2 版本：
 
 ```shell
 curl -L https://github.com/nats-io/nats-server/releases/download/v2.6.5/nats-server-v2.6.5-linux-amd64.zip -o nats-server.zip
@@ -70,7 +70,7 @@ Archive:  nats-server.zip
   inflating: nats-server-v2.6.2-linux-amd64/LICENSE
   inflating: nats-server-v2.6.2-linux-amd64/nats-server
 ```
-最后，将其复制到 bin 文件夹（这允许您从系统中的任何位置运行可执行文件）：
+最后，将其复制到 bin 文件夹（这允许你从系统中的任何位置运行可执行文件）：
 ```shell
 sudo cp nats-server/nats-server-v2.6.2-linux-amd64/nats-server /usr/bin
 ```
@@ -85,7 +85,7 @@ nats-server
 
 (或 `nats-server -m 8222` 如果要启用http监控功能)
 
-服务器启动成功后，您将看到以下消息：
+服务器启动成功后，你将看到以下消息：
 
 ```text
 [14524] 2021/10/25 22:53:53.525530 [INF] Starting nats-server

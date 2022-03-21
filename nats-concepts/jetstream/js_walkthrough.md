@@ -169,7 +169,7 @@ State:
             Waiting Pulls: 0 of maximum 512
 ```
 
-您随时可以使用 `nats consumer info` 查看任意消费者的状态，或使用 `nats stream my_stream` 查看stream的相关消息，甚至使用`nats stream rmm` 从stream中删除单条消息  
+你随时可以使用 `nats consumer info` 查看任意消费者的状态，或使用 `nats stream my_stream` 查看stream的相关消息，甚至使用`nats stream rmm` 从stream中删除单条消息  
 ## 3. Subscribing from the consumer
 
 现在已经创建了消费者，且stream中有消息，我们可以开始用消费者订阅消息：  
@@ -186,6 +186,6 @@ nats consumer next my_stream pull_consumer --count 1000
 
 ## 4. Cleaning up
 
-您可以使用`nats stream purge` 清理stream（并释放与其关联的资源（例如存储在流中的消息））
+你可以使用`nats stream purge` 清理stream（并释放与其关联的资源（例如存储在流中的消息））
 
-您还可以使用`nats stream rm` 删除stream（这也将自动删除可能在该流上定义的所有消费者)
+你还可以使用`nats stream rm` 删除stream（这也将自动删除可能在该流上定义的所有消费者)

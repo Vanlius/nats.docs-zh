@@ -158,5 +158,5 @@ natsConnection_Destroy(conn);
 {% endtabs %}
 
 If you run this example with the publish examples that send to `updates`, you will see that one of the instances gets a message while the others you run won't. But the instance that receives the message will change.  
-如果您使用发送更新的发布示例运行此示例，您将看到其中一个实例获得消息，而您运行的其他实例没有。但是接收消息的实例将改变。
+如果你使用发送更新的发布示例运行此示例，你将看到其中一个实例获得消息，而你运行的其他实例没有。但是接收消息的实例将改变。
 

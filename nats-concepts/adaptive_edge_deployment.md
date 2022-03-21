@@ -1,42 +1,38 @@
-# NATS Adaptive Deployment Architectures
+# NATS 自适应部署架构
+从单个进程到具有叶节点服务器的全局超级集群，您总是可以根据需要调整您的NATS服务部署。从许多云中的服务器和vpc，到部分连接的小型边缘设备以及介于两者之间的所有设备，在随着需求的增长，总是可以轻松地扩展和扩展你的NATS服务。  
 
-From a single process to a global super-cluster with leaf node servers, you can always adapt your NATS service deployment to your needs. From servers and VPCs in many clouds, to partially connected small edge devices and everything in between, you can always easily extend and scale your NATS service as your needs grow.
+## 单台服务器
+NATS服务基础结构的最简单版本是一个单一的`nat-server`进程。`nat-server`二进制文件经过了高度优化，非常轻量级，并且在资源使用方面非常高效。  
 
-## A single server
-
-The simplest version of a NATS service infrastructure is a single `nats-server` process. The `nats-server` binary is highly optimized, very lightweight and extremely efficient in its resources' usage.
-
-Client applications establish a connection to the URL of that nats-server process (e.g. `"nats://localhost"`).
+客户端应用程序建立到nat-server进程的URL的连接。(`nats://localhost`)。  
 
 ![](../.gitbook/assets/single-server.svg)
 
-## A cluster of servers
+## 服务器集群
+如果您需要一个容错的NATS服务，或者您需要扩展您的服务数量，您可以将一组nat-server进程聚集在一个集群中。  
 
-If you need a fault-tolerant NATS service or if you need to scale your service capacity, you can cluster a set of nats-server processes together in a cluster.
-
-Client applications establish and maintain a connection to (one of) the nats server URL(s) composing the cluster (e.g. `"nats://server1","nats://server2",...`).
+客户端应用程序建立和维护一个连接到组成集群的nats服务器URL(例如:“nats://server1”、“nats://server2”,……)。  
 
 ![](../.gitbook/assets/server-cluster.svg)
 
-## A super-cluster
+## 超级集群
+通过部署多个集群，并通过网关连接将它们连接在一起，您可以在单个集群之外进行灾难恢复，并获得全局部署(例如在多个位置或地区、多个vpc或多个云提供商)。  
 
-You can go further than a single cluster and have disaster recovery and get global deployments (e.g. on multiple locations or regions, multiple VPCs or multiple Cloud providers) by deploying multiple clusters and connecting them together via gateway connections (which are interest pruned).
-
-Client applications establish a connection to (one of) the nats server URL(s) of one of the clusters (e.g. `"nats://us-west-1.company.com","nats://us-west-2.company.com",...`).
+客户端应用程序建立到一个集群的nats服务器URL的连接。“nats: / /我们-西方- 1. company.com”、“nats: / /我们-西方- 2. company.com”,……)。  
 
 ![](../.gitbook/assets/super_cluster.svg)
 
-## With Leaf Nodes
 
-You can easily 'extend' the NATS service provided by a cluster or super-cluster by deploying 'locally' one or more **leaf node** nats servers that proxy and route traffic between their client applications and the NATS service infrastructure. The context of 'locality' in this case is not just physical: it could mean a location, an edge device or a single development machine, but it could also service a VPC, a group of server processes for a specific application or different accounts, or even a business unit. Leaf node NATS servers can be configured to connect to their cluster over a WebSocket connection (rather than TLS or plain TCP).
+## 叶子节点
+通过在本地部署一个或多个叶子节点NATS服务器，可以很容易地“扩展”由集群或超级集群提供的NATS服务，这些叶子节点NATS服务器在其客户端应用程序和NATS服务基础设施之间代理和路由流量。在这种情况下，“局部性”的上下文不仅仅是物理上的:它可以是一个位置，一个边缘设备或一个单独的开发机器，但它也可以服务于一个VPC，一组用于特定应用程序或不同帐户的服务器进程，甚至是一个业务单元。叶节点NATS服务器可以配置为通过WebSocket连接到它们的集群。  
 
-Leaf nodes appear to the cluster as a single account connection. Leaf nodes can provide continuous NATS service for their clients, even while being temporarily disconnected from the cluster(s). You can even enable JetStream on the leaf nodes in order to create local streams that are mirrored (mirroring is store and forward and therefore can recover from connectivity outages) to global streams in the upstream cluster(s).
+叶子节点在集群中显示为单个帐户连接。叶节点可以为其客户端提供持续的NATS服务，即使是在暂时与集群断开连接的情况下。你甚至可以在叶节点上启用JetStream，以便创建被镜像的本地流(镜像被存储和转发，因此可以从连接中断中恢复)到上游集群中的全局流。
 
-Client applications are configured with the URLs of their 'local' leaf node server(s) and establish a connection to (one of) the leaf node server(s) (e.g. `"nats://leaf-node-1","nats://leaf-node-2",...`).
+客户端应用程序使用它们的“本地”叶节点服务器的url进行配置，并建立到(其中一个)叶节点服务器的连接(例如:`“nats: //leaf-node-1”、“nats://leaf-node-2”,……`)。
 
 ![](../.gitbook/assets/leaf_nodes.svg)
 
-## See Also
+## 参见
 
 NATS Service Geo-affinity in Queues&#x20;
 

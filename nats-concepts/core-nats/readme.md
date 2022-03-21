@@ -1,5 +1,5 @@
 # Core NATS
 
-What is referred to as 'Core NATS' is the base set of functionalities and qualities of service offered by a NATS service infrastructure where none of the `nats-server` instances are configured to enable JetStream.
+所谓的'Core NATS'是 NATS 服务基础设施提供的基本功能和服务质量的集合，其中没有配置任何`nats-server`实例来启用 JetStream。  
 
-The 'Core NATS' functionalities are publish/subscribe with subject-based-addressing and queuing, with 'at most once' quality of service.
+'Core NATS'功能是发布/订阅，具有基于主题的寻址和队列，以及'最多一次'服务质量。  

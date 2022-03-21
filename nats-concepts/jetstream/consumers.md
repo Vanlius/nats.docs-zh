@@ -4,22 +4,22 @@ Consumers can be conceived as 'views' into a stream, with their own 'cursor'. Co
 消费者可以被理解为一种带有“游标”的流“视图”。消费者根据他们的“主题过滤器”和“重放策略”，对存储在流中的全部消息或部分消息进行迭代或消费，并且可以被一个或多个客户端应用程序使用。也可以定义上千个消费者消费同一个Stream。 
 
 Consumers can either be `push` based where JetStream will deliver the messages as fast as possible \(while adhering to the rate limit policy\) to a subject of your choice or `pull` to have control by asking the server for messages. The choice of what kind of consumer to use depends on the use-case but typically in the case of a client application that needs to get their own individual replay of messages from a stream you would use an 'ordered push consumer', while in the case of scaling horizontally the processing of messages from a stream you would use a 'pull consumer'.  
-消费者获取消息可以是基于push模式，JetStream将尽可能快地(同时遵守速率限制策略)将消息交付给您选择的主题，也可以是请求服务器通过pull模式来获取消息。选择使用哪种消费模式取决于用例，但通常在客户端应用程序需要从流中获取消息做重复消费的情况下，您应该使用“ordered push consumer”，而在处理流消息水平扩展的情况下，你应该使用“pull consumer”。
+消费者获取消息可以是基于push模式，JetStream将尽可能快地(同时遵守速率限制策略)将消息交付给你选择的主题，也可以是请求服务器通过pull模式来获取消息。选择使用哪种消费模式取决于用例，但通常在客户端应用程序需要从流中获取消息做重复消费的情况下，你应该使用“ordered push consumer”，而在处理流消息水平扩展的情况下，你应该使用“pull consumer”。
 
 The rate of message delivery in both cases is subject to `ReplayPolicy`. A `ReplayInstant` Consumer will receive all messages as fast as possible while a `ReplayOriginal` Consumer will receive messages at the rate they were received, which is great for replaying production traffic in staging.  
 这两种情况下的消息交付速率均受 ReplayPolicy 策略的约束。 ReplayInstant 模式消费者将尽可能快地接收所有消息，而 ReplayOriginal 模式消费者将以消息的接收速率接收消息，这对于在 staging 中重放生产流量非常有用。  
 
 In the orders example above we have 3 Consumers. The first two select a subset of the messages from the Stream by specifying a specific subject like `ORDERS.processed`. The Stream consumes `ORDERS.*` and this allows you to receive just what you need. The final Consumer receives all messages in a `push` fashion.  
-在上面的订单示例中，我们有 3 个消费者。前两个通过指定特定主题（如 ORDERS.processed）从 Stream 中选择消息的子集。 Stream 使用 ORDERS.*，这使您可以接收所需的内容。最终消费者以stream推送消息的方式接收所有消息。  
+在上面的订单示例中，我们有 3 个消费者。前两个通过指定特定主题（如 ORDERS.processed）从 Stream 中选择消息的子集。 Stream 使用 ORDERS.*，这使你可以接收所需的内容。最终消费者以stream推送消息的方式接收所有消息。  
 
 Consumers track their progress, they know what messages were delivered, acknowledged, etc., and will redeliver messages they sent that were not acknowledged. When first created, the Consumer has to know what message to send as the first one. You can configure either a specific message in the set \(`StreamSeq`\), specific time \(`StartTime`\), all \(`DeliverAll`\) or last \(`DeliverLast`\). This is the starting point and from there, they all behave the same - delivering all of the following messages with optional Acknowledgement.
-消费者会跟踪消费的进度，他们知道哪些消息被传递、被确认等，并且会重新传递他们发送的未被确认的消息。当第一次创建时，消费者必须知道（设置）第一条消息的发送将以那种方式发送。您可以配置为从指定消息序号 (StreamSeq)、指定的时间 (StartTime)、全部 (DeliverAll) 或最后 (DeliverLast)消费subject的消息。他们的行为都是一样的，使用可选的Acknowledgement传递所有以下消息。
+消费者会跟踪消费的进度，他们知道哪些消息被传递、被确认等，并且会重新传递他们发送的未被确认的消息。当第一次创建时，消费者必须知道（设置）第一条消息的发送将以那种方式发送。你可以配置为从指定消息序号 (StreamSeq)、指定的时间 (StartTime)、全部 (DeliverAll) 或最后 (DeliverLast)消费subject的消息。他们的行为都是一样的，使用可选的Acknowledgement传递所有以下消息。
 
 Acknowledgements default to `AckExplicit` - the only supported mode for pull-based Consumers - meaning every message requires a distinct acknowledgement. But for push-based Consumers, you can set `AckNone` that does not require any acknowledgement, or `AckAll` which quite interestingly allows you to acknowledge a specific message, like message `100`, which will also acknowledge messages `1` through `99`. The `AckAll` mode can be a great performance boost.  
 acknowledgement默认为AckExplicit，这是唯一支持的基于pull的消费者模式，这意味着每条消息都需要一个不同的确认。但是对基于push的消费者，你可以设置为AckNone不需要任何确认，或者设置为AckAll，非常有意思的是他可以让你确认特定的消息，比如消息100，他也会确认消息1到99。AckAll模式可以极大地提升性能。
 
 Some messages may cause your applications to crash and cause a never ending loop forever poisoning your system. The `MaxDeliver` setting allow you to set an upper bound to how many times a message may be delivered.  
-某些消息可能会导致您的应用程序崩溃并致使无限循环，长期损害您的系统。 MaxDeliver设置允许您设置一条消息可能被传递的次数的上限。
+某些消息可能会导致你的应用程序崩溃并致使无限循环，长期损害你的系统。 MaxDeliver设置允许你设置一条消息可能被传递的次数的上限。
 
 To assist with creating monitoring applications, one can set a `SampleFrequency` which is a percentage of messages for which the system should sample and create events. These events will include delivery counts and ack waits.  
 为了帮助创建监控应用程序，可以设置一个 SampleFrequency，它是系统对其采样和创建事件的消息的百分比。这些事件将包括消息交付计数和确认等待。 
@@ -46,12 +46,12 @@ This is the default policy. It means that each individual message must be acknow
 ### AckNone
 
 You do not have to ack any messages, the server will assume ack on delivery.   
-您不必确认任何消息，服务器将假定消息投递都已ack确认。
+你不必确认任何消息，服务器将假定消息投递都已ack确认。
 
 ### AckAll
 
 If you receive a series of messages, you only have to ack the last one you received. All the previous messages received are automatically acknowledged.  
-如果您收到一系列消息，您只需确认您收到的最后一条消息。所有以前收到的消息都会自动确认。
+如果你收到一系列消息，你只需确认你收到的最后一条消息。所有以前收到的消息都会自动确认。
 
 ## AckWait
 
@@ -108,7 +108,7 @@ The name of the Consumer, which the server will track, allowing resuming consump
 ## FilterSubject
 
 When consuming from a stream with a wildcard subject, this allows you to select a subset of the full wildcard subject to receive messages from.  
-从带有通配符主题的流中消费时，允许您选择完整通配符主题的子集来接收消息。
+从带有通配符主题的流中消费时，允许你选择完整通配符主题的子集来接收消息。
 
 ## MaxAckPending
 
@@ -118,7 +118,7 @@ MaxAckPending实现了一种简单的一对多流控制形式。它设置没有�
 ### Note about push and pull consumers: 
 
 The MaxAckPending's one-to-many flow control functionality is only useful for push consumers. For pull consumers you should disable it (i.e. -1), as it can otherwise place a limit on the horizontal scalability of the processing of the stream. Because delivery of the messages to the client application through pull consumers is client demand-driven rather than server initiated, there is no need for any kind of one-to-many flow control. With pull consumers at a given point in time, the number of pending acks is a function of the number of client applications calling `fetch` on the pull consumer and the requested batch size for that operation.  
-MaxAckPending 的一对多流控制功能仅对push模式消费者有用。对于pull模式的消费者，您应该禁用它（即-1），否则它会限制流处理的水平可伸缩性。因为基于pull模式的消费者，消息传递给客户端应用程序是客户端需求驱动的，而不是服务器发起的，所以不需要任何类型的一对多流控制。对于在给定时间点上的pull模式消费者，挂起ack的数量是一个函数，它由在pull消费者上调用fetch的客户端应用程序的数量和该操作请求的批处理大小组成。
+MaxAckPending 的一对多流控制功能仅对push模式消费者有用。对于pull模式的消费者，你应该禁用它（即-1），否则它会限制流处理的水平可伸缩性。因为基于pull模式的消费者，消息传递给客户端应用程序是客户端需求驱动的，而不是服务器发起的，所以不需要任何类型的一对多流控制。对于在给定时间点上的pull模式消费者，挂起ack的数量是一个函数，它由在pull消费者上调用fetch的客户端应用程序的数量和该操作请求的批处理大小组成。
 
 ## FlowControl
 
