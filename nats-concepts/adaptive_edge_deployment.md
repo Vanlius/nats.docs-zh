@@ -18,7 +18,7 @@ NATS服务基础结构的最简单版本是一个单一的`nat-server`进程。`
 ## 超级集群
 通过部署多个集群，并通过网关连接将它们连接在一起，您可以在单个集群之外进行灾难恢复，并获得全局部署(例如在多个位置或地区、多个vpc或多个云提供商)。  
 
-客户端应用程序建立到一个集群的nats服务器URL的连接。“nats: / /我们-西方- 1. company.com”、“nats: / /我们-西方- 2. company.com”,……)。  
+客户端应用程序建立到一个集群的nats服务器URL的连接。(例如：`“nats://us-west-1.company.com”、“nats://us-west-2.company.com”,……`)。  
 
 ![](../.gitbook/assets/super_cluster.svg)
 

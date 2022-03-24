@@ -1,31 +1,31 @@
-# Queue Groups
+# 队列组
 
-## Queue Groups
+## 队列组
 
-NATS provides a built-in load balancing feature called distributed queues. Using queue subscribers will balance message delivery across a group of subscribers which can be used to provide application fault tolerance and scale workload processing.
+NATS提供了一种内置负载平衡功能的分布式队列。使用队列订阅者在一组订阅者之间平衡消息传递，这些订阅者可用于提供应用程序容错和扩展工作负载处理。  
+ 
+要创建队列订阅，订阅者需要注册一个队列名称。具有相同队列名称的所有订阅者构成队列组。这不需要配置。随着注册主题的消息发布，组中的一名成员被随机选择接收消息。尽管队列组有多个订阅者，但每条消息仅由一个订阅者使用。  
 
-To create a queue subscription, subscribers register a queue name. All subscribers with the same queue name form the queue group. This requires no configuration. As messages on the registered subject are published, one member of the group is chosen randomly to receive the message. Although queue groups have multiple subscribers, each message is consumed by only one.
+队列组名称遵循与[主题](../../subjects.md)相同的命名规则。最重要的是，它们区分大小写并且不能包含空格。考虑使用`.`分层构造队列组。一些服务器功能可以在它们上使用通配符匹配。 
 
-Queue group names follow the same naming rules as [subjects](../../subjects.md). Foremost, they are case sensitive and cannot contain whitespace. Consider structuring queue groups hierarchically using `.`. Some server functionalities can use [wildcard matching](../../subjects.md#wildcards) on them.
+NATS的一个重要特性是，队列组是由应用程序及其队列订阅者定义的，而不是在服务器配置上。  
 
-One of the great features of NATS is that queue groups are defined by the application and their queue subscribers, not on the server configuration.
+队列订阅者是扩展服务的理想选择。按比例放大和运行另一个应用程序一样简单，按比例缩小就是用一个信号终止应用程序，这个信号会耗尽正在运行的请求。这种灵活性和不需要任何配置更改，使NATS成为一种优秀的服务通信技术，可以与所有平台技术一起工作。  
 
-Queue subscribers are ideal for scaling services. Scale up is as simple as running another application, scale down is terminating the application with a signal that drains the in flight requests. This flexibility and lack of any configuration changes makes NATS an excellent service communication technology that can work with all platform technologies.
+### 无应答
+ 
+当向服务发出请求（请求/回复）并且 NATS 服务器知道没有可用的服务（因为当前没有客户端应用程序订阅队列组中的主题）时，服务器将短路请求。 “无响应”协议消息将被发送回请求客户端，该客户端将从阻塞API调用中中断。这允许应用程序立即做出反应，从而进一步实现大规模构建高度响应的系统，即使面对应用程序故障和网络分区也是如此。
 
-### No responder
+## 流作为队列
 
-When a request is made to a service (request/reply) and the NATS Server knows there are no services available (as there are no client applications currently subscribing to the subject in a queue-group) the server will short circuit the request. A “no-responders” protocol message will be sent back to the requesting client which will break from blocking API calls. This allows applications to immediately react which further enables building a highly responsive system at scale, even in the face of application failures and network partitions.
-
-## Stream as a queue
-
-With [JetStream](../../jetstream/readme.md) a stream can also be used as a queue by setting the retention policy to `WorkQueuePolicy` and leveraging [`pull` consumers](../../jetstream/consumers.md) to get easy horizontal scalability of the processing (or using an explicit ack push consumer with a queue group of subscribers).
+使用[JetStream](../../jetstream/readme.md)流也可以被用作队列，通过设置保留策略为`WorkQueuePolicy`，并利用[`pull`消费者](../../jetstream/consumers.md)来轻松得到处理的水平可伸缩性(或者使用带有订阅者队列组的显式ack push消费者)。
 
 ![](../../../.gitbook/assets/queue.svg)
 
-### Queuing geo-affinity
+### 队列中的geo-affinity
 
-When connecting to a globally distributed NATS super-cluster, there is an automatic service geo-affinity due to the fact that a service request message will only be routed to another cluster (i.e. another region) if there are no listeners on the cluster available to handle the request locally.
+当连接到一个全球分布的 NATS 超级集群时，由于服务请求消息只会被路由到另一个集群（即另一个区域），如果集群上没有可用的侦听器，则存在一种自动的服务地理相关性。在本地处理请求。  
 
-### Tutorial
+### 教程   
 
 Try NATS queue subscriptions on your own, using a live server by walking through the [queueing walkthrough](queues_walkthrough.md).
